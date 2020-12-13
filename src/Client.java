@@ -1,20 +1,28 @@
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 
 
 public class Client {
     public static void main(String[] args) {
 
-        Socket clientSocket = null;
+        Socket socket = null;
 
         OutputStream outputStream = null;
 
 
         try {
-            clientSocket = new Socket("localhost", 8080);
-            System.out.println("서버 연결");
-            System.out.println("socket : " + clientSocket);
+            // 소켓을 생성 및 연결 요청, 이때 연결할 서버의 ip와 포트번호 입력
+            socket = new Socket("localhost", 8080);
+
+            OutputStream outputStream1 = socket.getOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+
+            // 소켓의 입력스트림을 얻는 과정
+            InputStream inputStream = socket.getInputStream();
+            DataInputStream dataInputStream = new DataInputStream(inputStream);
+
+            System.out.println(dataInputStream.readUTF());
+
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -19,11 +19,12 @@ public class Client {
 
         try {
             // 소켓을 생성 및 연결 요청, 이때 연결할 서버의 ip와 포트번호 입력
-            socket = new Socket("localhost", 8080);
+            socket = new Socket("localhost", 7777);
+            System.out.println(socket.getInetAddress());
             System.out.println("클라이언트 접속 성공");
 
             outputStream = socket.getOutputStream();
-             dataOutputStream = new DataOutputStream(outputStream);
+            dataOutputStream = new DataOutputStream(outputStream);
 
             // 소켓의 입력스트림을 얻는 과정
             inputStream = socket.getInputStream();
@@ -36,6 +37,7 @@ public class Client {
 
                 dataOutputStream.writeUTF(inputByClient);
                 dataOutputStream.flush();
+
 
 
 

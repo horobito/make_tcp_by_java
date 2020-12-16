@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -7,64 +8,61 @@ public class Server {
     public static void main(String[] args) throws IOException {
 
         ServerSocket serverSocket = null;
+
         Socket cliSocket = null;
 
-        InputStream inputStream = null;
-        DataInputStream dataInputStream = null;
+        BufferedReader br = null;
 
-        OutputStream outputStream = null;
-        DataOutputStream dataOutputStream = null;
+        BufferedWriter bw = null;
 
 
 
-        try{
-            // 서버 소켓 생성 및, 포트(8080)와 결합
+        try {
             serverSocket = new ServerSocket(8080);
-            System.out.println("클라이언트 접속 대기중 ");
-            
-            // 요청이 들어올 때까지 대기했다가,
-            // 클라 요청 시 클라 소켓과 통신할 소켓 반환
+
+//            serverSocket.bind(new InetSocketAddress("localhost", 8080));
+            System.out.println("클라이언트 접속 준비중");
+
             cliSocket = serverSocket.accept();
+            System.out.println("클라이언트 접속 완료");
 
+            br = new BufferedReader(new InputStreamReader(cliSocket.getInputStream()));
 
-            inputStream = cliSocket.getInputStream();
-            dataInputStream = new DataInputStream(inputStream);
+            bw = new BufferedWriter(new OutputStreamWriter(cliSocket.getOutputStream()));
 
-            // 소켓의 출력 스트림 얻는 것
-            outputStream = cliSocket.getOutputStream();
-            dataOutputStream = new DataOutputStream(outputStream);
+            String line = "";
+//            line != null || !line.isBlank()
 
-
-
-            while (true){
-                try {
-
-
-                    String inputData = dataInputStream.readUTF();
-
-                    if(inputData.equals("closeAndFinish")){
-                        dataOutputStream.writeUTF("Your inputString is " + inputData + "\n"
-                                + "and my answer is 'ByeBye'");
-                        break;
-                    }
-                    dataOutputStream.writeUTF("Your inputString is " + inputData + "\n"
-                            + "and my answer is 'hello'");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            while (!(line=br.readLine()).isBlank()){
+                System.out.println(line);
             }
+
+            bw.write("HTTP/1.1 200 OK\r\n" +
+                    "Content-Type: text/html\r\n\r\n" +
+                    "black coffee !\r\n\r\n");
+
+            bw.flush();
+
+            bw.close();
 
 
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
-            if(dataOutputStream !=null){ dataOutputStream.close();}
-            if(outputStream !=null){outputStream.close();}
-            if(dataInputStream !=null){dataInputStream.close();}
-            if (inputStream !=null){inputStream.close();}
-            cliSocket.close();
-            serverSocket.close();
+        } finally {
+            try {
+                cliSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("통신 종료");
+
 
         }
 

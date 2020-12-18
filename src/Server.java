@@ -33,13 +33,29 @@ public class Server {
             String line = "";
 //            line != null || !line.isBlank()
 
+            line = br.readLine();
+            System.out.println(line);
+            String[] parsedUrl = line.split(" ");
+            String method = parsedUrl[0];
+            String sub = parsedUrl[1];
+            System.out.println(sub);
+
+
+
+
             while (!(line=br.readLine()).isBlank()){
                 System.out.println(line);
             }
 
-            bw.write("HTTP/1.1 200 OK\r\n" +
-                    "Content-Type: text/html\r\n\r\n" +
-                    "black coffee !\r\n\r\n");
+            if(method.equals("GET")){
+                if(sub.length()>2){
+
+                }else {
+                    bw.write("HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: text/html\r\n\r\n" +
+                            "hello world!\r\n\r\n");
+                }
+            }
 
             bw.flush();
 

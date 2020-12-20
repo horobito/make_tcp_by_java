@@ -1,7 +1,7 @@
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
+import java.nio.CharBuffer;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Server {
@@ -18,7 +18,8 @@ public class Server {
 
 
         try {
-            serverSocket = new ServerSocket(8080);
+            int port = 8080;
+            serverSocket = new ServerSocket(port);
 
 //            serverSocket.bind(new InetSocketAddress("localhost", 8080));
             System.out.println("클라이언트 접속 준비중");
@@ -37,29 +38,67 @@ public class Server {
             System.out.println(line);
             String[] parsedUrl = line.split(" ");
             String method = parsedUrl[0];
-            String sub = parsedUrl[1];
-            System.out.println(sub);
+            String url =  parsedUrl[1].substring(1, parsedUrl[1].length());
+            System.out.println(url);
+            String directory = url.split("\\?")[0];
+            System.out.println(directory);
 
 
-
+            System.out.println(method);
+            System.out.println();
 
             while (!(line=br.readLine()).isBlank()){
                 System.out.println(line);
             }
 
+            String[] query = new URL("http://localhost:"+port+"/"+url).getQuery().split("&");
+            for (String a : query){
+            }
+
+            HashMap<String, Integer> parameter = new HashMap<>();
+
+            if(method.equals("POST")){
+
+                if(directory.equals("calculator")){
+                    System.out.println("hi i'm calculator");
+                    int answer = 1;
+                    for (String param : query){
+                        String name = param.split("=")[0];
+                        int value = Integer.parseInt(param.split("=")[1]);
+                        answer *= value;
+                    }
+                    bw.write("HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: text/html\r\n\r\n" +
+                            answer + "\r\n\r\n");
+                }
+
+            }
+
+;
+
+
             if(method.equals("GET")){
-                if(sub.length()>2){
+
+                System.out.println(url);
+                if(url.length()>1){
+                    String name = url.split("=")[1];
+                    bw.write("HTTP/1.1 200 OK\r\n" +
+                            "Content-Type: text/html\r\n\r\n" +
+                            "hello " + name + "\r\n\r\n");
 
                 }else {
                     bw.write("HTTP/1.1 200 OK\r\n" +
                             "Content-Type: text/html\r\n\r\n" +
-                            "hello world!\r\n\r\n");
+                            "black coffee!\r\n\r\n");
                 }
+
             }
 
             bw.flush();
 
             bw.close();
+
+
 
 
         } catch (IOException e) {
